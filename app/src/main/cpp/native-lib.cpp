@@ -1,10 +1,8 @@
 #include <jni.h>
 #include <string>
 #include "JavaScriptCore/JavaScript.h"
-#include<android/log.h>
-
-#define TAG "NativeTag"
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
+#include "Example.cpp"
+#include "Log.h"
 
 extern "C" JNIEXPORT jstring
 JNICALL
@@ -34,7 +32,9 @@ Java_com_apkfuns_javascriptcorestudy_MainActivity_calculation(
 }
 
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_apkfuns_javascriptcorestudy_MainActivity_callObject(
         JNIEnv *env, jobject obj) {
+    LOGD("callObject!!");
+    Example example = Example();
 }

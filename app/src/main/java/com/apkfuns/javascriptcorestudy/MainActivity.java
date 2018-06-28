@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         String expression = "3*2 + 1.5";
         String value = expression + "=" + calculation(expression);
         tv.setText(value);
+        callObject();
     }
 
     /**
