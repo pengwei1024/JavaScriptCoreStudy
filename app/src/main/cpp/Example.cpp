@@ -62,8 +62,8 @@ void Example::Initialize() {
     // 创建 global 对象的类
     JSClassRef global_class = JSClassCreate(&global_class_definition);
     // 根据 global 类创建上下文，从上下文获取 global 对象
-    JSContextRef context = JSGlobalContextCreateInGroup(context_group, global_class);
-    JSObjectRef global = JSContextGetGlobalObject(context);
+    context = JSGlobalContextCreateInGroup(context_group, global_class);
+    global = JSContextGetGlobalObject(context);
 
     // 创建 example 类的定义
     JSClassDefinition example_class_definition = kJSClassDefinitionEmpty;
@@ -91,8 +91,6 @@ void Example::Initialize() {
     JSObjectSetProperty(context, global, example_str_ref, example, kJSPropertyAttributeDontDelete,
                         NULL);
     JSStringRelease(example_str_ref);
-
-    runScript(context);
 }
 
 
@@ -106,35 +104,40 @@ Example::~Example() {
 }
 
 void Example::TestStatic() {
-    LOGD("TestStatic");
+    LOGD("call TestStatic");
 }
 
 void Example::TestDynamic() {
-    LOGD("TestDynamic");
+    LOGD("call TestDynamic!");
 }
 
 int Example::num() {
-    LOGD("num: %d", numValue);
+    LOGD("call num: %d", numValue);
     return numValue;
 }
 
 void Example::set_num(int num) {
     numValue = num;
-    LOGD("set_num: %d", num);
+    LOGD("call set_num: %d", num);
 }
 
-void Example::runScript(JSContextRef context) {
-    const char *buffer = "var example=new Example();example.testDynamic();";
+JSValueRef Example::runScript(const char *buffer) {
     JSStringRef script = ::JSStringCreateWithUTF8CString(buffer);
     JSValueRef exception = nullptr;
-    ::JSEvaluateScript(context, script, 0, 0, 0, &exception);
+    JSValueRef ret = JSEvaluateScript(context, script, global, 0, 0, &exception);
+    JSStringRelease(script);
     if (nullptr != exception) {
-        JSStringRef str = ::JSValueToStringCopy(
+        JSStringRef errorStr = ::JSValueToStringCopy(
                 context, exception, nullptr);
-        if (nullptr != str) {
-            LOGE("runScript error");
-            ::JSStringRelease(str);
+        // 输出错误内容
+        if (nullptr != errorStr) {
+            std::string lineError = "";
+            lineError.resize(::JSStringGetMaximumUTF8CStringSize(errorStr));
+            lineError.resize(::JSStringGetUTF8CString(
+                    errorStr, &lineError[0], lineError.length()));
+            ::JSStringRelease(errorStr);
+            LOGE("runScript error: %s", lineError.c_str());
         }
     }
-    ::JSStringRelease(script);
+    return ret;
 }

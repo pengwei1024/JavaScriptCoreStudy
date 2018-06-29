@@ -35,6 +35,6 @@ Java_com_apkfuns_javascriptcorestudy_MainActivity_calculation(
 extern "C" JNIEXPORT void JNICALL
 Java_com_apkfuns_javascriptcorestudy_MainActivity_callObject(
         JNIEnv *env, jobject obj) {
-    LOGD("callObject!!");
     Example example = Example();
+    example.runScript("example.num = 99;example.testStatic()");
 }

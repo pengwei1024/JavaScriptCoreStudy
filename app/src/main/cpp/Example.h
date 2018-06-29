@@ -20,12 +20,14 @@ public:
 
     void set_num(int num);
 
+    JSValueRef runScript(const char * buffer);
+
     int numValue;
+    JSContextRef context;
+    JSObjectRef global;
 
 private:
     void Initialize();
-
-    void runScript(JSContextRef context_group);
 };
 
 
